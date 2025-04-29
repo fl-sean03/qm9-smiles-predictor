@@ -32,7 +32,7 @@ This repository implements and compares four distinct feed-forward neural-networ
 │   ├── multitask/
 │   │   └── eval_multitask/      # Evaluation results (metrics, plots, smaller CSVs)
 │   ├── autoencoder/
-│   │   └── eval_ae_run/         # Evaluation results (metrics, plots, smaller CSVs)
+│   │   └── eval_ae/         # Evaluation results (metrics, plots, smaller CSVs)
 │   └── hybrid/
 │       └── hybrid_eval/         # Evaluation results (metrics, plots, smaller CSVs)
 └── src/                         # Source code for workflows
