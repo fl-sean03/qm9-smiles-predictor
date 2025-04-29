@@ -62,6 +62,39 @@ The four implemented pipelines are:
 
 ## 📊 Workflows
 
+### 0. Data Preparation
+
+This section outlines the steps to prepare the necessary data files: extracting QM9 targets and generating Mordred descriptors.
+
+1.  **Generate QM9 Targets**: Extract the nine target properties and original index from `data/qm9/qm9_clean.csv`.
+    ```bash
+    python src/gen_qm9_targets.py \
+      --input_csv data/qm9/qm9_clean.csv \
+      --output_csv data/qm9/qm9_targets.csv
+    ```
+
+2.  **Extract Raw Mordred Descriptors**: Compute Mordred descriptors from the SMILES strings in `data/qm9/qm9_clean.csv`. This can be time-consuming for the full dataset.
+    ```bash
+    python src/mordred/extract_mordred.py \
+      --input_csv data/qm9/qm9_clean.csv \
+      --output_csv outputs/mordred_csvs/mordred_raw.csv
+    ```
+
+3.  **Clean Mordred Descriptors**: Clean the raw Mordred descriptors by removing columns with NaN or infinite values and dropping duplicate rows based on original index.
+    ```bash
+    python src/mordred/clean_mordred.py \
+      --input_csv outputs/mordred_csvs/mordred_raw.csv \
+      --output_csv data/mordred_features/mordred_cleaned.csv
+    ```
+
+4.  **Verify Cleaned Mordred Descriptors (Optional)**: Perform a sanity check on the cleaned Mordred descriptor file.
+    ```bash
+    python src/mordred/verify_mordred.py \
+      --input_csv data/mordred_features/mordred_cleaned.csv
+    ```
+
+---
+
 Each pipeline involves a sequence of scripts in the `src/` directory to perform featurization (if applicable), training, evaluation, and visualization. Below are the specific command-line workflows for each method, assuming you are in the repository's root directory and have activated the Python virtual environment.
 
 ### 1. Baseline (Mordred-only)
