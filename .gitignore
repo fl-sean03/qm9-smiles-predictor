@@ -1,0 +1,24 @@
+# Ignore data and output directories
+data/
+outputs/
+
+# Ignore specific file types that might be large or generated
+*.csv
+*.png
+*.h5
+*.pkl
+
+# Ignore Python specific files
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+.python-version
+
+# Ignore editor/IDE specific files
+.vscode/
+.idea/
+
+# Ignore OS generated files
+.DS_Store
