@@ -1,9 +1,8 @@
 # Ignore data and output directories
 data/
-outputs/
 
 # Ignore specific file types that might be large or generated
-*.csv
+outputs/*.csv
 *.png
 *.h5
 *.pkl
