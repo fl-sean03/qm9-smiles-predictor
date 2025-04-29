@@ -62,15 +62,139 @@ The four implemented pipelines are:
 
 ## 📊 Workflows
 
-Each pipeline has a set of scripts in the `src/` directory to perform featurization (if applicable), training, evaluation, and visualization. The general workflow for each method involves running these scripts sequentially.
+Each pipeline involves a sequence of scripts in the `src/` directory to perform featurization (if applicable), training, evaluation, and visualization. Below are the specific command-line workflows for each method, assuming you are in the repository's root directory and have activated the Python virtual environment.
 
-Detailed commands for running each workflow can be found within the respective script files in the `src/` subdirectories.
+### 1. Baseline (Mordred-only)
+
+```bash
+# 1) Train single-task FNNs on Mordred
+python src/baseline/train_baseline_qm9.py \
+  --descriptors_csv data/mordred_features/mordred_cleaned.csv \
+  --targets_csv     data/qm9/qm9_targets.csv \
+  --output_dir      outputs/baseline/model_run
+
+# 2) Evaluate vs. paper MAEs
+python src/baseline/eval_qm9.py \
+  --descriptors_csv data/mordred_features/mordred_cleaned.csv \
+  --targets_csv     data/qm9/qm9_targets.csv \
+  --run_dir         outputs/baseline/model_run \
+  --out_dir         outputs/baseline/evaluation
+
+# 3) Visualize parity, residuals, comparison
+python src/baseline/viz_qm9.py \
+  --eval_dir       outputs/baseline/evaluation \
+  --comparison_dir outputs/baseline/evaluation/comparison
+```
+
+---
+
+### 2. Multitask (Mordred shared FNN)
+
+```bash
+# Train multitask FNN
+python src/multitask/train_multitask_qm9.py \
+  --descriptors_csv data/mordred_features/mordred_cleaned.csv \
+  --targets_csv     data/qm9/qm9_targets.csv \
+  --output_dir      outputs/multitask/multitask_run
+
+# Evaluate multitask
+python src/multitask/eval_multitask_qm9.py \
+  --descriptors_csv data/mordred_features/mordred_cleaned.csv \
+  --targets_csv     data/qm9/qm9_targets.csv \
+  --out_dir         outputs/multitask/eval_multitask
+
+# Visualize multitask
+python src/multitask/viz_multitask_qm9.py \
+  --eval_dir       outputs/multitask/eval_multitask \
+  --comparison_dir outputs/multitask/eval_multitask/comparison
+```
+
+---
+
+### 3. Autoencoder (AE → FNN)
+
+```bash
+# 1) Train autoencoder on Mordred features
+python src/autoencoder/train_autoencoder.py \
+  --input-desc   data/mordred_features/mordred_cleaned.csv \
+  --output-dir   outputs/autoencoder/autoencoder_run \
+  --bottleneck-dim 100
+
+# 2) Generate AE embeddings
+python src/autoencoder/featurize_autoencoder.py \
+  --input-desc       data/mordred_features/mordred_cleaned.csv \
+  --encoder-weights  outputs/autoencoder/autoencoder_run/encoder_best.weights.h5 \
+  --scaler           outputs/autoencoder/autoencoder_run/scaler.pkl \
+  --output-emb       data/mordred_features/X_autoencoder.npy
+
+# 3) Train FNNs on AE embeddings
+python src/autoencoder/train_qm9_with_ae.py \
+  --embeddings        data/mordred_features/X_autoencoder.npy \
+  --descriptors_csv   data/mordred_features/mordred_cleaned.csv \
+  --targets_csv       data/qm9/qm9_targets.csv \
+  --output_dir        outputs/autoencoder/fnn_ae_run
+
+# 4) Evaluate AE-run FNNs
+python src/autoencoder/eval_qm9_with_ae.py \
+  --embeddings      data/mordred_features/X_autoencoder.npy \
+  --descriptors_csv data/mordred_features/mordred_cleaned.csv \
+  --targets_csv     data/qm9/qm9_targets.csv \
+  --run_dir         outputs/autoencoder/fnn_ae_run \
+  --out_dir         outputs/autoencoder/eval_ae # Corrected directory name
+
+# 5) Visualize AE-run
+python src/autoencoder/viz_qm9_with_ae.py \
+  --eval_dir        outputs/autoencoder/eval_ae # Corrected directory name
+  --comparison_dir  outputs/autoencoder/eval_ae/comparison # Corrected directory name
+```
+
+---
+
+### 4. Hybrid (ECFP4 + Mordred)
+
+```bash
+# 1) Extract orig_index list from cleaned Mordred
+cut -d, -f1 data/mordred_features/mordred_cleaned.csv > data/mordred_features/orig_idx.txt
+
+# 2) Featurize: build hybrid fingerprint+Mordred matrix
+python src/hybrid/featurize_hybrid.py \
+  --smiles_csv  data/qm9/qm9_clean.csv \
+  --desc_csv    data/mordred_features/mordred_cleaned.csv \
+  --output_npy  data/mordred_features/X_hybrid.npy \
+  --radius      2 \
+  --nBits       1024
+
+# 3) Train FNNs on hybrid features
+python src/hybrid/train_hybrid.py \
+  --embeddings     data/mordred_features/X_hybrid.npy \
+  --orig_index     data/mordred_features/orig_idx.txt \
+  --targets_csv    data/qm9/qm9_targets.csv \
+  --output_dir     outputs/hybrid/hybrid_run \
+  --batch_size     256 \
+  --epochs         200 \
+  --learning_rate  1e-3 \
+  --hidden_layers  256,256 \
+  --patience       10
+
+# 4) Evaluate hybrid models
+python src/hybrid/eval_hybrid.py \
+  --embeddings   data/mordred_features/X_hybrid.npy \
+  --orig_index   data/mordred_features/orig_idx.txt \
+  --targets_csv  data/qm9/qm9_targets.csv \
+  --run_dir      outputs/hybrid/hybrid_run \
+  --out_dir      outputs/hybrid/hybrid_eval
+
+# 5) Visualize hybrid
+python src/hybrid/viz_hybrid.py \
+  --eval_dir       outputs/hybrid/hybrid_eval \
+  --comparison_dir outputs/hybrid/hybrid_eval/comparison
+```
 
 ---
 
 ## ⚙️ Configuration
 
-Model hyperparameters and training settings can typically be adjusted via command-line arguments for each script. Refer to the individual script files for specific options.
+Model hyperparameters and training settings can typically be adjusted via command-line arguments for each script. Refer to the individual script files in `src/` for specific options.
 
 ---
 
