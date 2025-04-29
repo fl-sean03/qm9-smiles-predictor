@@ -1,0 +1,9 @@
+argparse
+pandas
+numpy
+tensorflow
+joblib
+scikit-learn
+matplotlib
+rdkit
+mordred
