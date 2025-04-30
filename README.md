@@ -134,6 +134,9 @@ python src/multitask/train_multitask_qm9.py \
 python src/multitask/eval_multitask_qm9.py \
   --descriptors_csv data/mordred_features/mordred_cleaned.csv \
   --targets_csv     data/qm9/qm9_targets.csv \
+  --model_path      outputs/multitask/multitask_best.h5 \
+  --scaler_X        outputs/multitask/scalers/scaler_X.pkl \
+  --scaler_y        outputs/multitask/scalers/scaler_y.pkl \
   --out_dir         outputs/multitask/eval_multitask
 
 # Visualize multitask
