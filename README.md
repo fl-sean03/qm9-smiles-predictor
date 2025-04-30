@@ -60,6 +60,18 @@ The four implemented pipelines are:
 
 ---
 
+## 🧪 Running Tests
+
+To run the project's test suite, execute the `./run_tests.sh` script from the root directory of the repository:
+
+```bash
+./run_tests.sh
+```
+
+This script uses `pytest` to discover and run tests located in the `tests/` directory.
+
+---
+
 ## 📊 Workflows
 
 ### 0. Data Preparation
