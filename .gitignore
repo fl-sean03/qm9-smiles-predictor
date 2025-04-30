@@ -27,5 +27,12 @@ env/
 .DS_Store
 
 # Ignore specific png files in outputs/cross_comparison/visuals/ except one
-outputs/cross_comparison/visuals/*.png
+# Ignore everything in outputs/cross_comparison/ recursively
+outputs/cross_comparison/**/*
+
+# Except for json and csv files recursively
+!outputs/cross_comparison/**/*.json
+!outputs/cross_comparison/**/*.csv
+
+# Except for the specific png file
 !outputs/cross_comparison/visuals/all_properties_mae_comparison.png
