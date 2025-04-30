@@ -7,7 +7,7 @@ outputs/mordred_csvs/
 outputs/*/*_run/
 
 # Ignore specific file types that might be large or generated, unless in desired directories
-*.png
+outputs/**/*.png
 *.h5
 *.pkl
 
