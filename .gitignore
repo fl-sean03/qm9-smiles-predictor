@@ -25,3 +25,7 @@ env/
 
 # Ignore OS generated files
 .DS_Store
+
+# Ignore specific png files in outputs/cross_comparison/visuals/ except one
+outputs/cross_comparison/visuals/*.png
+!outputs/cross_comparison/visuals/all_properties_mae_comparison.png
